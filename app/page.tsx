@@ -1,30 +1,70 @@
 "use client";
 
+/* The carousel card is an article so its semantic content remains discoverable while it supports keyboard selection. */
+/* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
+
 import { useMemo, useState } from "react";
+import recruitmentData from "../jobs.json";
 
 type View = "지원 가능" | "제외된 공고" | "관심 공고";
-type JobType = "인턴" | "신입";
+type JobType = "" | "인턴" | "신입";
 type Job = {
   id: number; company: string; title: string; location: string; deadline: string; deadlineLabel: string; type: JobType; mode: string; isGame: boolean; devPrimary: boolean;
   eligibility: { firstYear: boolean; graduateOnly: boolean; experienceRequired: boolean };
   responsibilities: string[]; qualification: string[]; summary: string; source: string;
 };
 
-const jobs: Job[] = [
-  { id: 1, company: "스마일게이트", title: "게임 클라이언트 개발 인턴", location: "판교·경기", deadline: "2026-08-29", deadlineLabel: "8월 29일 · D-5", type: "인턴", mode: "하이브리드", isGame: true, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["Unity 기반 게임 플레이 기능 구현", "라이브 서비스 이슈 분석과 개선", "코드 리뷰 및 개발 문서 작성"], qualification: ["컴퓨터·인공지능 관련 전공", "C# 또는 C++ 기초 이해", "2026년 1학년 재학 중 지원 가능"], summary: "플레이어가 매일 만나는 게임의 다음 장면을 함께 만든다.", source: "https://careers.smilegate.com/" },
-  { id: 2, company: "넥슨", title: "웹 서비스 프론트엔드 인턴", location: "판교·경기", deadline: "2026-09-03", deadlineLabel: "9월 3일 · D-10", type: "인턴", mode: "출근", isGame: true, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["게임 커뮤니티 웹 기능 개발", "React 컴포넌트 테스트와 리팩터링", "디자이너·기획자와 사용자 경험 개선"], qualification: ["HTML·CSS·JavaScript 기초", "React 학습 경험", "재학 중인 대학생"], summary: "게임 유저가 더 빠르고 편하게 소통하는 웹 경험을 만든다.", source: "https://career.nexon.com/" },
-  { id: 3, company: "토스", title: "제품 개발 인턴", location: "서울·수도권", deadline: "2026-09-09", deadlineLabel: "9월 9일 · D-16", type: "인턴", mode: "하이브리드", isGame: false, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["금융 서비스 화면과 API 기능 개발", "제품 지표를 바탕으로 사용성 개선", "동료와 함께 기술적 문제 해결"], qualification: ["웹 개발에 관심이 있는 대학생", "JavaScript 또는 TypeScript 경험", "새로운 기술을 빠르게 배우는 태도"], summary: "복잡한 금융을 누구나 쉽게 쓰는 제품으로 바꾼다.", source: "https://toss.im/career" },
-  { id: 4, company: "카카오", title: "AI 서비스 개발 신입", location: "판교·경기", deadline: "2026-09-16", deadlineLabel: "9월 16일 · D-23", type: "신입", mode: "하이브리드", isGame: false, devPrimary: true, eligibility: { firstYear: false, graduateOnly: true, experienceRequired: false }, responsibilities: ["추천 서비스 백엔드 기능 구현", "모델 서빙 API 성능 개선", "데이터 파이프라인 모니터링"], qualification: ["2027년 2월 졸업예정자 또는 졸업자", "Python 기반 개발 경험", "서비스 개발 프로젝트 경험"], summary: "데이터와 AI로 다음 세대의 일상을 설계한다.", source: "https://careers.kakao.com/" },
-  { id: 5, company: "대전정보문화산업진흥원", title: "지역 콘텐츠 플랫폼 개발 인턴", location: "대전", deadline: "2026-09-01", deadlineLabel: "9월 1일 · D-8", type: "인턴", mode: "출근", isGame: false, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["지역 문화 콘텐츠 등록 화면 개발", "웹 접근성 점검과 UI 개선", "서비스 운영 데이터 정리"], qualification: ["충청권 대학 재학생", "HTML·CSS 기초", "팀 프로젝트 협업 경험"], summary: "대전의 이야기가 더 많은 사람에게 닿는 서비스를 만든다.", source: "https://www.dicia.or.kr/" },
-  { id: 6, company: "모바일리더", title: "서비스 운영 매니저", location: "서울·수도권", deadline: "2026-08-31", deadlineLabel: "8월 31일 · D-7", type: "신입", mode: "출근", isGame: false, devPrimary: false, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: true }, responsibilities: ["고객 문의와 운영 이슈 대응", "서비스 운영 정책 정리", "유관 부서 요청사항 관리"], qualification: ["관련 경력 2년 이상 필수", "서비스 운영 경험", "문서 작성 능력"], summary: "서비스가 매일 안정적으로 작동하도록 운영을 책임진다.", source: "https://example.com/jobs/6" },
-];
+type Recruitment = {
+  recrutPblntSn?: number;
+  instNm?: string;
+  recrutPbancTtl?: string;
+  workRgnNmLst?: string;
+  pbancEndYmd?: string;
+  decimalDay?: number;
+  hireTypeNmLst?: string;
+  recrutSeNm?: string;
+  ncsCdNmLst?: string;
+  aplyQlfcCn?: string;
+  srcUrl?: string;
+};
+
+const asText = (value: unknown) => typeof value === "string" ? value : "";
+const formatDate = (value: string) => /^\d{8}$/.test(value) ? `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}` : "";
+const formatDeadlineLabel = (date: string, decimalDay?: number) => {
+  if (!date) return "";
+  const month = Number(date.slice(5, 7));
+  const day = Number(date.slice(8, 10));
+  const days = typeof decimalDay === "number" ? ` · D-${decimalDay}` : "";
+  return `${month}월 ${day}일${days}`;
+};
+const splitLines = (value: string) => value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+const jobs: Job[] = (recruitmentData as Recruitment[]).map((item, index) => {
+  const company = asText(item.instNm);
+  const title = asText(item.recrutPbancTtl);
+  const location = asText(item.workRgnNmLst);
+  const deadline = formatDate(asText(item.pbancEndYmd));
+  const qualifications = asText(item.aplyQlfcCn);
+  const type: JobType = asText(item.hireTypeNmLst).includes("인턴") ? "인턴" : asText(item.recrutSeNm).includes("신입") ? "신입" : "";
+  const searchable = `${title} ${asText(item.ncsCdNmLst)}`;
+  const devPrimary = /(개발|소프트웨어|정보통신|전산|프로그래|데이터|인공지능|AI|웹|앱|시스템|IT|클라우드)/i.test(searchable);
+  const graduateOnly = /(졸업자|졸업예정자|졸업 예정자)/.test(qualifications) && !/(재학생|대학생)/.test(qualifications);
+  const experienceRequired = /(경력\s*필수|경력자\s*필수|경력\s*\d+년|유관\s*경력)/.test(qualifications);
+  return {
+    id: Number(item.recrutPblntSn ?? index + 1), company, title, location, deadline,
+    deadlineLabel: formatDeadlineLabel(deadline, item.decimalDay), type, mode: "",
+    isGame: /게임|game/i.test(searchable), devPrimary,
+    eligibility: { firstYear: !graduateOnly && !experienceRequired, graduateOnly, experienceRequired },
+    responsibilities: [], qualification: splitLines(qualifications), summary: "", source: asText(item.srcUrl),
+  };
+});
 
 const regionRank: Record<string, number> = { "서울·수도권": 0, "판교·경기": 0, "대전": 1, "세종": 2, "충남": 3 };
 const today = new Date("2026-08-24T00:00:00");
 const isGame = (job: Job) => job.isGame;
 const isEligible = (job: Job) => job.devPrimary && Object.keys(regionRank).some((region) => job.location.includes(region.split("·")[0])) && job.eligibility.firstYear && !job.eligibility.graduateOnly && !job.eligibility.experienceRequired;
 const exclusionReason = (job: Job) => !job.devPrimary ? "소프트웨어·서비스 개발이 주된 업무가 아님" : !job.eligibility.firstYear ? "1학년 지원 불가" : job.eligibility.graduateOnly ? "졸업자 또는 졸업예정자만 지원 가능" : job.eligibility.experienceRequired ? "경력 보유가 필수" : "지원 가능 지역 외 근무지";
-const daysUntil = (deadline: string) => Math.round((new Date(`${deadline}T00:00:00`).getTime() - today.getTime()) / 86400000);
+const daysUntil = (deadline: string) => deadline ? Math.round((new Date(`${deadline}T00:00:00`).getTime() - today.getTime()) / 86400000) : null;
+const deadlineStatus = (deadline: string) => { const days = daysUntil(deadline); return days === null ? "" : days >= 0 ? "접수 중" : "마감"; };
 
 export default function Home() {
   const [view, setView] = useState<View>("지원 가능");
@@ -51,9 +91,9 @@ export default function Home() {
     <header className="topbar"><a className="wordmark" href="#top"><span>J</span>잡픽</a><div className="student-chip"><span className="status-dot" /> 충남대학교 컴퓨터인공지능학부 · 1학년</div><div className="top-actions"><button type="button" className="ghost-button">프로필 설정</button><div className="avatar">김</div></div></header>
     <section className="intro" id="top"><div><p className="eyebrow">TODAY&apos;S JOB RADAR</p><h1>지금, <em>지원할 수 있는</em><br />공고만 골라봤어요.</h1><p className="intro-copy">개발이 주된 업무인지, 1학년도 지원할 수 있는지<br />공고에 적힌 조건으로 먼저 확인해요.</p></div><div className="intro-note"><span>추천 기준</span><strong>게임 · 지역 · 마감일</strong><p>공고 원문에 적힌 데이터만 사용해<br />지원 가능 여부를 판정합니다.</p></div></section>
     <section className="workspace" aria-label="채용공고 탐색">
-      <aside className="sidebar"><div className="sidebar-title"><span>공고 목록</span><b>{visibleJobs.length}</b></div><div className="view-tabs">{(["지원 가능", "제외된 공고", "관심 공고"] as View[]).map((item) => <button key={item} type="button" className={view === item ? "active" : ""} onClick={() => { setView(item); setSlide(0); setSelectedId(null); }}>{item}<span>{countFor(item)}</span></button>)}</div><div className="sidebar-filters"><label htmlFor="search">공고 검색</label><div className="search-input"><span>⌕</span><input id="search" value={search} onChange={(event) => { setSearch(event.target.value); setSlide(0); }} placeholder="회사, 직무, 지역" /></div><label>모집 형태</label><div className="segmented">{(["전체", "인턴", "신입"] as const).map((item) => <button key={item} type="button" className={typeFilter === item ? "selected" : ""} onClick={() => { setTypeFilter(item); setSlide(0); }}>{item}</button>)}</div></div></aside>
-      <div className="carousel-panel"><div className="panel-heading"><div><p className="eyebrow">{view === "지원 가능" ? "APPLY NOW" : view === "제외된 공고" ? "CHECK CONDITIONS" : "SAVED JOBS"}</p><h2>{view}</h2></div><div className="sort-control"><label htmlFor="sort">정렬</label><select id="sort" value={sort} onChange={(event) => setSort(event.target.value as "priority" | "deadline")} disabled={view === "관심 공고"}><option value="priority">우선순위순</option><option value="deadline">마감일순</option></select></div></div>{activeJob ? <><div className="carousel-meta"><span>{slide + 1} / {visibleJobs.length}</span><div><button type="button" onClick={() => moveSlide(-1)} aria-label="이전 공고">←</button><button type="button" onClick={() => moveSlide(1)} aria-label="다음 공고">→</button></div></div><div className="carousel-window"><div className="carousel-track" style={{ transform: `translateX(calc(${slide} * -100%))` }}>{visibleJobs.map((job) => <article className={`job-card ${job.id === activeJob.id ? "active" : ""}`} key={job.id} onClick={() => selectJob(job)}><div className="card-top"><span className={`company-mark ${job.isGame ? "game" : ""}`}>{job.company.slice(0, 1)}</span><span className={job.isGame ? "game-label" : "match-label"}>{job.isGame ? "GAME" : "MATCH"}</span></div><p className="company">{job.company}</p><h3>{job.title}</h3><div className="card-meta"><span>⌖ {job.location}</span><span>◷ {job.deadlineLabel}</span></div><div className="card-bottom"><span className="type-pill">{job.type}</span><span className="mode-pill">{job.mode}</span><button type="button" className={savedAt[job.id] ? "save saved" : "save"} onClick={(event) => { event.stopPropagation(); toggleSaved(job.id); }} aria-label={`${job.company} 관심 공고 ${savedAt[job.id] ? "해제" : "저장"}`}>{savedAt[job.id] ? "★" : "☆"}</button></div>{view === "제외된 공고" && <p className="excluded-reason">제외: {exclusionReason(job)}</p>}</article>)}</div></div><p className="carousel-hint">카드를 눌러 상세 내용을 확인하세요</p></> : <div className="empty"><strong>{view === "관심 공고" ? "저장한 공고가 아직 없어요" : "조건에 맞는 공고가 없어요"}</strong><span>다른 필터를 선택해보세요.</span></div>}</div>
-      {selectedJob && <aside className="detail-panel"><div className="detail-top"><span className="eyebrow">JOB DETAIL</span><button type="button" className="close-detail" onClick={() => setSelectedId(null)} aria-label="상세 닫기">×</button></div><div className="detail-company"><span className={`company-mark large ${selectedJob.isGame ? "game" : ""}`}>{selectedJob.company.slice(0, 1)}</span><div><b>{selectedJob.company}</b><span>{selectedJob.location}</span></div></div><h2>{selectedJob.title}</h2><p className="detail-summary">{selectedJob.summary}</p><div className="detail-status"><span className={isEligible(selectedJob) ? "status-ok" : "status-no"}>{isEligible(selectedJob) ? "지원 가능" : "지원 제외"}</span><span>{selectedJob.deadlineLabel}</span></div><div className="detail-grid"><div><span>개발 중심 업무</span><strong>{selectedJob.devPrimary ? "예 · 주된 업무" : "아니오"}</strong></div><div><span>모집 형태</span><strong>{selectedJob.type}</strong></div><div><span>근무 방식</span><strong>{selectedJob.mode}</strong></div><div><span>접수 상태</span><strong>{daysUntil(selectedJob.deadline) >= 0 ? "접수 중" : "마감"}</strong></div></div><section className="detail-section"><h3>주요 업무</h3><ul>{selectedJob.responsibilities.map((item) => <li key={item}>{item}</li>)}</ul></section><section className="detail-section"><h3>지원 자격</h3><ul>{selectedJob.qualification.map((item) => <li key={item}>{item}</li>)}</ul></section>{!isEligible(selectedJob) && <div className="reason-box"><b>지원 제외 이유</b><span>{exclusionReason(selectedJob)}</span></div>}<div className="detail-actions"><button type="button" className={savedAt[selectedJob.id] ? "saved-action" : ""} onClick={() => toggleSaved(selectedJob.id)}>{savedAt[selectedJob.id] ? "★ 관심 공고 저장됨" : "☆ 관심 공고 저장"}</button><a href={selectedJob.source} target="_blank" rel="noreferrer">원문 공고 보기 ↗</a></div></aside>}
+      <aside className="sidebar"><div className="sidebar-title"><span>공고 목록</span><b>{visibleJobs.length}</b></div><div className="view-tabs">{(["지원 가능", "제외된 공고", "관심 공고"] as View[]).map((item) => <button key={item} type="button" className={view === item ? "active" : ""} onClick={() => { setView(item); setSlide(0); setSelectedId(null); }}>{item}<span>{countFor(item)}</span></button>)}</div><div className="sidebar-filters"><label htmlFor="search">공고 검색</label><div className="search-input"><span>⌕</span><input id="search" value={search} onChange={(event) => { setSearch(event.target.value); setSlide(0); }} placeholder="회사, 직무, 지역" /></div><label htmlFor="type-filter">모집 형태</label><div className="segmented">{(["전체", "인턴", "신입"] as const).map((item) => <button id={item === "전체" ? "type-filter" : undefined} key={item} type="button" className={typeFilter === item ? "selected" : ""} onClick={() => { setTypeFilter(item); setSlide(0); }}>{item}</button>)}</div></div></aside>
+      <div className="carousel-panel"><div className="panel-heading"><div><p className="eyebrow">{view === "지원 가능" ? "APPLY NOW" : view === "제외된 공고" ? "CHECK CONDITIONS" : "SAVED JOBS"}</p><h2>{view}</h2></div><div className="sort-control"><label htmlFor="sort">정렬</label><select id="sort" value={sort} onChange={(event) => setSort(event.target.value as "priority" | "deadline")} disabled={view === "관심 공고"}><option value="priority">우선순위순</option><option value="deadline">마감일순</option></select></div></div>{activeJob ? <><div className="carousel-meta"><span>{slide + 1} / {visibleJobs.length}</span><div><button type="button" onClick={() => moveSlide(-1)} aria-label="이전 공고">←</button><button type="button" onClick={() => moveSlide(1)} aria-label="다음 공고">→</button></div></div><div className="carousel-window"><div className="carousel-track" style={{ transform: `translateX(calc(${slide} * -100%))` }}>{visibleJobs.map((job) => <article className={`job-card ${job.id === activeJob.id ? "active" : ""}`} key={job.id} role="button" tabIndex={0} onClick={() => selectJob(job)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") selectJob(job); }}><div className="card-top"><span className={`company-mark ${job.isGame ? "game" : ""}`}>{job.company.slice(0, 1)}</span><span className={job.isGame ? "game-label" : "match-label"}>{job.isGame ? "GAME" : "MATCH"}</span></div><p className="company">{job.company}</p><h3>{job.title}</h3><div className="card-meta"><span>⌖ {job.location}</span><span>◷ {job.deadlineLabel}</span></div><div className="card-bottom"><span className="type-pill">{job.type}</span><span className="mode-pill">{job.mode}</span><button type="button" className={savedAt[job.id] ? "save saved" : "save"} onClick={(event) => { event.stopPropagation(); toggleSaved(job.id); }} aria-label={`${job.company} 관심 공고 ${savedAt[job.id] ? "해제" : "저장"}`}>{savedAt[job.id] ? "★" : "☆"}</button></div>{view === "제외된 공고" && <p className="excluded-reason">제외: {exclusionReason(job)}</p>}</article>)}</div></div><p className="carousel-hint">카드를 눌러 상세 내용을 확인하세요</p></> : <div className="empty"><strong>{view === "관심 공고" ? "저장한 공고가 아직 없어요" : "조건에 맞는 공고가 없어요"}</strong><span>다른 필터를 선택해보세요.</span></div>}</div>
+      {selectedJob && <aside className="detail-panel"><div className="detail-top"><span className="eyebrow">JOB DETAIL</span><button type="button" className="close-detail" onClick={() => setSelectedId(null)} aria-label="상세 닫기">×</button></div><div className="detail-company"><span className={`company-mark large ${selectedJob.isGame ? "game" : ""}`}>{selectedJob.company.slice(0, 1)}</span><div><b>{selectedJob.company}</b><span>{selectedJob.location}</span></div></div><h2>{selectedJob.title}</h2><p className="detail-summary">{selectedJob.summary}</p><div className="detail-status"><span className={isEligible(selectedJob) ? "status-ok" : "status-no"}>{isEligible(selectedJob) ? "지원 가능" : "지원 제외"}</span><span>{selectedJob.deadlineLabel}</span></div><div className="detail-grid"><div><span>개발 중심 업무</span><strong>{selectedJob.devPrimary ? "예 · 주된 업무" : "아니오"}</strong></div><div><span>모집 형태</span><strong>{selectedJob.type}</strong></div><div><span>근무 방식</span><strong>{selectedJob.mode}</strong></div><div><span>접수 상태</span><strong>{deadlineStatus(selectedJob.deadline)}</strong></div></div><section className="detail-section"><h3>주요 업무</h3><ul>{selectedJob.responsibilities.map((item) => <li key={item}>{item}</li>)}</ul></section><section className="detail-section"><h3>지원 자격</h3><ul>{selectedJob.qualification.map((item) => <li key={item}>{item}</li>)}</ul></section>{!isEligible(selectedJob) && <div className="reason-box"><b>지원 제외 이유</b><span>{exclusionReason(selectedJob)}</span></div>}<div className="detail-actions"><button type="button" className={savedAt[selectedJob.id] ? "saved-action" : ""} onClick={() => toggleSaved(selectedJob.id)}>{savedAt[selectedJob.id] ? "★ 관심 공고 저장됨" : "☆ 관심 공고 저장"}</button><a href={selectedJob.source || undefined} target="_blank" rel="noreferrer">원문 공고 보기 ↗</a></div></aside>}
     </section><footer><span className="wordmark"><span>J</span>잡픽</span><p>공고에 적힌 조건으로, 첫 지원을 더 가볍게.</p><small>© 2026 JOBPICK</small></footer>
   </main>;
 }
