@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root { --ink: #172019; --paper: #f4f2e9; --blue: #3857df; --acid: #d7ff5f; --line: #c8c9bd; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+button, a { font: inherit; } button { color: inherit; } a { color: inherit; text-decoration: none; }
+.site-header { height: 78px; display: flex; align-items: center; padding: 0 5vw; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(244,242,233,.94); backdrop-filter: blur(12px); z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 900; letter-spacing: -1px; }
+.brand-mark { width: 31px; height: 31px; display: grid; place-items: center; background: var(--ink); color: var(--acid); border-radius: 50% 50% 50% 6px; font-size: 16px; }
+nav { display: flex; gap: 34px; margin: 0 auto; font-size: 14px; font-weight: 700; }
+nav a { padding: 27px 0 24px; border-bottom: 3px solid transparent; } nav a.active { border-bottom-color: var(--ink); }
+.profile-button { border: 1px solid var(--ink); border-radius: 999px; background: transparent; padding: 9px 12px 9px 16px; font-size: 13px; font-weight: 700; }
+.profile-button span { background: var(--acid); margin-left: 8px; border-radius: 999px; padding: 5px 8px; }
+.hero { min-height: 570px; display: grid; grid-template-columns: 1fr 400px; gap: 8vw; align-items: center; padding: 70px 7vw 76px; border-bottom: 1px solid var(--line); overflow: hidden; }
+.hero-copy { max-width: 760px; } .eyebrow { display: inline-flex; gap: 9px; align-items: center; font-size: 13px; font-weight: 800; margin-bottom: 25px; } .eyebrow span { color: var(--blue); font-size: 9px; }
+h1 { margin: 0; font-size: clamp(52px, 6.4vw, 94px); line-height: .98; letter-spacing: -.075em; font-weight: 900; }
+h1 em { color: var(--blue); font-style: normal; position: relative; } h1 em::after { content: ""; position: absolute; height: 8px; left: 3px; right: -3px; bottom: -2px; background: var(--acid); z-index: -1; transform: rotate(-1deg); }
+.hero-copy > p { font-size: 18px; line-height: 1.65; color: #555d55; margin: 28px 0 30px; letter-spacing: -.4px; }
+.hero-actions { display: flex; gap: 23px; align-items: center; } .primary-button { display: inline-flex; align-items: center; gap: 32px; background: var(--ink); color: white; border-radius: 4px; padding: 17px 19px; font-size: 15px; font-weight: 800; box-shadow: 6px 6px 0 var(--acid); } .primary-button span { font-size: 20px; }
+.social-proof { max-width: 150px; font-size: 11px; color: #71766f; line-height: 1.45; } .social-proof b { color: var(--ink); }
+.match-card { background: var(--blue); color: white; border-radius: 5px; padding: 28px 30px 27px; transform: rotate(2deg); box-shadow: 16px 16px 0 var(--ink); position: relative; }
+.match-card::before { content: "+"; position: absolute; color: var(--acid); font-size: 50px; right: -42px; top: -45px; font-weight: 200; }
+.match-card-top { display: flex; justify-content: space-between; text-transform: uppercase; font-weight: 800; font-size: 11px; letter-spacing: 1.2px; } .live-dot { color: var(--acid); }
+.match-card strong { display: block; font-size: 34px; line-height: 1.2; letter-spacing: -1.7px; margin: 28px 0 25px; } .match-card strong i { font-style: normal; color: var(--acid); }
+.match-bars { display: flex; flex-direction: column; gap: 7px; } .match-bars span { height: 6px; background: var(--acid); }
+.match-card p { color: #dfe3ff; font-size: 13px; line-height: 1.55; } .match-card button { width: 100%; border: 0; background: white; padding: 13px; font-weight: 800; border-radius: 3px; cursor: pointer; }
+.jobs-section { padding: 64px 5vw 90px; } .section-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 30px; }
+.section-kicker { color: var(--blue); font-size: 11px; font-weight: 900; letter-spacing: 1.8px; } h2 { margin: 7px 0 0; font-size: 34px; letter-spacing: -1.8px; } .section-heading > a { font-size: 13px; font-weight: 800; border-bottom: 1px solid var(--ink); padding-bottom: 3px; }
+.featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; } .job-card { min-height: 275px; padding: 23px; background: #fffef9; border: 1px solid var(--line); position: relative; transition: transform .2s, box-shadow .2s; } .job-card:hover { transform: translateY(-5px); box-shadow: 0 13px 30px rgba(23,32,25,.08); }
+.job-card-head { display: flex; justify-content: space-between; align-items: center; } .company-logo { width: 38px; height: 38px; display: grid; place-items: center; background: var(--ink); color: white; font-weight: 900; border-radius: 10px; } .fit-badge { color: var(--blue); background: #edf0ff; border-radius: 999px; padding: 7px 9px; font-size: 10px; font-weight: 900; }
+.company-name { font-size: 12px; font-weight: 800; margin: 23px 0 8px; } .job-card h3 { margin: 0; font-size: 21px; letter-spacing: -.8px; } .job-meta { color: #6c726c; font-size: 12px; } .tag-row { display: flex; gap: 6px; margin-top: 22px; } .tag-row span { border: 1px solid #d8d9d0; padding: 6px 8px; font-size: 10px; color: #555b55; }
+.save-button { position: absolute; right: 18px; bottom: 17px; border: 0; background: none; font-size: 23px; cursor: pointer; } .save-button.saved { color: var(--blue); } .insight-card { background: var(--acid); border-color: var(--ink); } .insight-label { font-size: 11px; font-weight: 900; letter-spacing: 1px; }
+.insight-card strong { display: block; font-size: 26px; line-height: 1.25; margin: 32px 0 15px; letter-spacing: -1px; } .insight-card strong i { font-style: normal; color: var(--blue); } .insight-card p { font-size: 12px; line-height: 1.55; } .insight-card button { position: absolute; bottom: 22px; border: 0; background: none; font-weight: 900; padding: 0; cursor: pointer; }
+@media (max-width: 850px) { nav { display: none; } .profile-button { margin-left: auto; } .hero { grid-template-columns: 1fr; padding: 58px 6vw 70px; } .match-card { max-width: 440px; transform: none; } .featured-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .site-header { padding: 0 20px; } .hero { padding-inline: 22px; } h1 { font-size: 50px; } .hero-actions { align-items: flex-start; flex-direction: column; } .jobs-section { padding-inline: 20px; } .section-heading { align-items: flex-start; gap: 16px; flex-direction: column; } }
+
+.clickable { cursor: pointer; }
+.company-logo.orange { background: #ff6b35; } .company-logo.green { background: #17b75b; } .company-logo.yellow { background: #ffe044; color: var(--ink); } .company-logo.blue { background: #32a9e8; } .company-logo.dark { background: var(--ink); }
+.explore-section { padding: 82px 5vw 100px; background: #fffef9; border-top: 1px solid var(--line); }
+.explore-intro { display: grid; grid-template-columns: 110px 1fr 1fr; align-items: end; margin-bottom: 35px; }
+.explore-intro h2 { margin: 0; } .explore-intro p { margin: 0; justify-self: end; font-size: 13px; color: #737870; }
+.search-panel { display: grid; grid-template-columns: minmax(260px, 1fr) auto auto; gap: 18px; align-items: center; padding: 16px; border: 1px solid var(--ink); background: var(--paper); margin-bottom: 22px; }
+.search-box { display: flex; gap: 10px; align-items: center; background: white; border: 1px solid #dadbd2; padding: 0 13px; height: 46px; }
+.search-box > span { font-size: 24px; line-height: 1; transform: rotate(-18deg); }
+.search-box input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; font-size: 14px; }
+.search-box button { border: 0; background: none; cursor: pointer; font-size: 19px; }
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-row button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 9px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.filter-row button.selected { background: var(--ink); color: white; border-color: var(--ink); }
+.result-count { min-width: 68px; font-size: 12px; text-align: right; } .result-count b { color: var(--blue); font-size: 18px; }
+.all-jobs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.empty-state { padding: 80px 20px; border: 1px dashed var(--line); text-align: center; }
+.empty-state strong { font-size: 22px; } .empty-state p { color: #747a73; font-size: 13px; } .empty-state button { margin-top: 10px; background: var(--ink); color: white; border: 0; padding: 11px 17px; cursor: pointer; }
+.guide-section { background: var(--ink); color: white; padding: 90px 7vw; display: grid; grid-template-columns: .85fr 1.2fr; gap: 9vw; }
+.guide-section h2 { font-size: clamp(38px, 4.7vw, 66px); line-height: 1.08; letter-spacing: -.06em; } .section-kicker.light { color: var(--acid); }
+.steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid #495049; }
+.steps li { display: grid; grid-template-columns: 55px 1fr; gap: 20px; padding: 27px 0; border-bottom: 1px solid #495049; }
+.steps li > span { color: var(--acid); font-size: 12px; font-weight: 900; } .steps strong { font-size: 20px; } .steps p { margin: 8px 0 0; color: #abb1aa; font-size: 13px; line-height: 1.6; }
+footer { min-height: 150px; padding: 40px 5vw; display: flex; align-items: center; gap: 40px; border-top: 1px solid var(--line); }
+footer p { font-size: 13px; color: #6d736d; } footer > span { margin-left: auto; font-size: 10px; letter-spacing: 1px; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(23,32,25,.58); display: grid; place-items: center; padding: 20px; backdrop-filter: blur(5px); }
+.job-modal { width: min(620px, 100%); max-height: 90vh; overflow-y: auto; background: #fffef9; border: 1px solid var(--ink); padding: 35px; box-shadow: 12px 12px 0 var(--acid); position: relative; animation: modalIn .22s ease-out; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(18px); } }
+.modal-close { position: absolute; right: 18px; top: 15px; border: 0; background: none; font-size: 27px; cursor: pointer; }
+.modal-company { display: flex; align-items: center; gap: 12px; } .modal-company div { display: flex; flex-direction: column; gap: 4px; } .modal-company b { font-size: 14px; } .modal-company div span { color: var(--blue); font-size: 10px; font-weight: 900; }
+.job-modal h2 { margin-top: 26px; font-size: 34px; max-width: 480px; } .modal-meta { color: #6d736d; font-size: 13px; border-bottom: 1px solid var(--line); padding-bottom: 23px; }
+.modal-summary { font-size: 16px; line-height: 1.7; margin: 25px 0; } .job-modal h3 { font-size: 14px; margin-top: 25px; }
+.job-modal ul { padding-left: 20px; color: #555d55; font-size: 13px; line-height: 2; } .job-modal li::marker { color: var(--blue); }
+.modal-tags { display: flex; gap: 7px; margin: 25px 0; } .modal-tags span { background: #edf0ff; color: var(--blue); padding: 7px 9px; font-size: 11px; font-weight: 800; }
+.modal-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 9px; } .modal-actions button { border: 1px solid var(--ink); padding: 14px; background: white; font-weight: 800; cursor: pointer; } .modal-actions button:last-child { background: var(--ink); color: white; } .modal-actions button.saved { color: var(--blue); }
+.toast { position: fixed; z-index: 80; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: white; box-shadow: 5px 5px 0 var(--acid); padding: 14px 17px; font-size: 13px; white-space: nowrap; }
+.toast button { margin-left: 22px; border: 0; background: transparent; color: white; cursor: pointer; }
+
+@media (max-width: 950px) { .all-jobs-grid { grid-template-columns: repeat(2, 1fr); } .search-panel { grid-template-columns: 1fr; } .result-count { text-align: left; } .explore-intro { grid-template-columns: 1fr; gap: 9px; } .explore-intro p { justify-self: start; } }
+@media (max-width: 720px) { .all-jobs-grid { grid-template-columns: 1fr; } .guide-section { grid-template-columns: 1fr; } footer { align-items: flex-start; flex-direction: column; gap: 12px; } footer > span { margin-left: 0; } }
+@media (max-width: 520px) { .explore-section { padding: 65px 20px; } .filter-row { gap: 5px; } .filter-row button { padding: 8px 11px; } .job-modal { padding: 28px 22px; } .modal-actions { grid-template-columns: 1fr; } .guide-section { padding: 70px 22px; } }
