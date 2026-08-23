@@ -1,111 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+type View = "지원 가능" | "제외된 공고" | "관심 공고";
+type JobType = "인턴" | "신입";
 type Job = {
-  id: number; company: string; logo: string; role: string; category: string; location: string;
-  type: string; deadline: string; fit: number; tags: string[]; accent: string; summary: string; tasks: string[];
+  id: number; company: string; title: string; location: string; deadline: string; deadlineLabel: string; type: JobType; mode: string; isGame: boolean; devPrimary: boolean;
+  eligibility: { firstYear: boolean; graduateOnly: boolean; experienceRequired: boolean };
+  responsibilities: string[]; qualification: string[]; summary: string; source: string;
 };
 
 const jobs: Job[] = [
-  { id: 1, company: "토스", logo: "T", role: "Product Assistant (인턴)", category: "기획", location: "서울", type: "인턴", deadline: "D-5", fit: 94, tags: ["서비스 기획", "데이터 분석"], accent: "dark", summary: "제품 데이터를 관찰하고 더 나은 사용자 경험을 만드는 팀과 함께해요.", tasks: ["제품 지표 리서치와 인사이트 정리", "사용자 인터뷰 및 운영 업무 지원", "서비스 개선 아이디어 제안"] },
-  { id: 2, company: "당근", logo: "당", role: "마케팅 콘텐츠 인턴", category: "마케팅", location: "서울", type: "인턴", deadline: "D-8", fit: 89, tags: ["콘텐츠", "브랜드"], accent: "orange", summary: "동네의 새로운 이야기를 발견하고 매력적인 콘텐츠로 전해요.", tasks: ["SNS 콘텐츠 기획 및 제작", "캠페인 레퍼런스 리서치", "콘텐츠 성과 데이터 정리"] },
-  { id: 3, company: "네이버", logo: "N", role: "서비스 운영 체험형 인턴", category: "기획", location: "경기", type: "인턴", deadline: "D-12", fit: 87, tags: ["서비스 운영", "커뮤니케이션"], accent: "green", summary: "사용자 피드백을 서비스 개선의 단서로 바꾸는 경험을 쌓아요.", tasks: ["VOC 분류 및 개선점 도출", "운영 정책과 가이드 문서화", "유관 부서 커뮤니케이션"] },
-  { id: 4, company: "무신사", logo: "M", role: "브랜드 마케팅 어시스턴트", category: "마케팅", location: "서울", type: "계약직", deadline: "D-3", fit: 84, tags: ["패션", "캠페인"], accent: "dark", summary: "패션과 문화를 연결하는 브랜드 캠페인의 시작부터 함께해요.", tasks: ["브랜드 캠페인 운영 지원", "패션 트렌드 및 경쟁사 조사", "프로모션 결과 리포트 작성"] },
-  { id: 5, company: "카카오페이", logo: "K", role: "UX 리서치 인턴", category: "디자인", location: "경기", type: "인턴", deadline: "D-15", fit: 81, tags: ["UX 리서치", "Figma"], accent: "yellow", summary: "금융을 더 쉽고 편하게 만드는 사용자 연구에 참여해요.", tasks: ["리서치 참여자 모집과 일정 관리", "인터뷰 기록 및 데이터 정리", "UX 인사이트 아카이빙"] },
-  { id: 6, company: "오늘의집", logo: "O", role: "Frontend Engineer 신입", category: "개발", location: "서울", type: "신입", deadline: "D-21", fit: 78, tags: ["React", "TypeScript"], accent: "blue", summary: "콘텐츠와 커머스를 잇는 빠르고 직관적인 화면을 만들어요.", tasks: ["웹 프론트엔드 기능 개발", "디자인 시스템 개선 참여", "코드 리뷰와 기술 공유"] },
+  { id: 1, company: "스마일게이트", title: "게임 클라이언트 개발 인턴", location: "판교·경기", deadline: "2026-08-29", deadlineLabel: "8월 29일 · D-5", type: "인턴", mode: "하이브리드", isGame: true, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["Unity 기반 게임 플레이 기능 구현", "라이브 서비스 이슈 분석과 개선", "코드 리뷰 및 개발 문서 작성"], qualification: ["컴퓨터·인공지능 관련 전공", "C# 또는 C++ 기초 이해", "2026년 1학년 재학 중 지원 가능"], summary: "플레이어가 매일 만나는 게임의 다음 장면을 함께 만든다.", source: "https://careers.smilegate.com/" },
+  { id: 2, company: "넥슨", title: "웹 서비스 프론트엔드 인턴", location: "판교·경기", deadline: "2026-09-03", deadlineLabel: "9월 3일 · D-10", type: "인턴", mode: "출근", isGame: true, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["게임 커뮤니티 웹 기능 개발", "React 컴포넌트 테스트와 리팩터링", "디자이너·기획자와 사용자 경험 개선"], qualification: ["HTML·CSS·JavaScript 기초", "React 학습 경험", "재학 중인 대학생"], summary: "게임 유저가 더 빠르고 편하게 소통하는 웹 경험을 만든다.", source: "https://career.nexon.com/" },
+  { id: 3, company: "토스", title: "제품 개발 인턴", location: "서울·수도권", deadline: "2026-09-09", deadlineLabel: "9월 9일 · D-16", type: "인턴", mode: "하이브리드", isGame: false, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["금융 서비스 화면과 API 기능 개발", "제품 지표를 바탕으로 사용성 개선", "동료와 함께 기술적 문제 해결"], qualification: ["웹 개발에 관심이 있는 대학생", "JavaScript 또는 TypeScript 경험", "새로운 기술을 빠르게 배우는 태도"], summary: "복잡한 금융을 누구나 쉽게 쓰는 제품으로 바꾼다.", source: "https://toss.im/career" },
+  { id: 4, company: "카카오", title: "AI 서비스 개발 신입", location: "판교·경기", deadline: "2026-09-16", deadlineLabel: "9월 16일 · D-23", type: "신입", mode: "하이브리드", isGame: false, devPrimary: true, eligibility: { firstYear: false, graduateOnly: true, experienceRequired: false }, responsibilities: ["추천 서비스 백엔드 기능 구현", "모델 서빙 API 성능 개선", "데이터 파이프라인 모니터링"], qualification: ["2027년 2월 졸업예정자 또는 졸업자", "Python 기반 개발 경험", "서비스 개발 프로젝트 경험"], summary: "데이터와 AI로 다음 세대의 일상을 설계한다.", source: "https://careers.kakao.com/" },
+  { id: 5, company: "대전정보문화산업진흥원", title: "지역 콘텐츠 플랫폼 개발 인턴", location: "대전", deadline: "2026-09-01", deadlineLabel: "9월 1일 · D-8", type: "인턴", mode: "출근", isGame: false, devPrimary: true, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: false }, responsibilities: ["지역 문화 콘텐츠 등록 화면 개발", "웹 접근성 점검과 UI 개선", "서비스 운영 데이터 정리"], qualification: ["충청권 대학 재학생", "HTML·CSS 기초", "팀 프로젝트 협업 경험"], summary: "대전의 이야기가 더 많은 사람에게 닿는 서비스를 만든다.", source: "https://www.dicia.or.kr/" },
+  { id: 6, company: "모바일리더", title: "서비스 운영 매니저", location: "서울·수도권", deadline: "2026-08-31", deadlineLabel: "8월 31일 · D-7", type: "신입", mode: "출근", isGame: false, devPrimary: false, eligibility: { firstYear: true, graduateOnly: false, experienceRequired: true }, responsibilities: ["고객 문의와 운영 이슈 대응", "서비스 운영 정책 정리", "유관 부서 요청사항 관리"], qualification: ["관련 경력 2년 이상 필수", "서비스 운영 경험", "문서 작성 능력"], summary: "서비스가 매일 안정적으로 작동하도록 운영을 책임진다.", source: "https://example.com/jobs/6" },
 ];
 
-const categories = ["전체", "기획", "마케팅", "개발", "디자인"];
+const regionRank: Record<string, number> = { "서울·수도권": 0, "판교·경기": 0, "대전": 1, "세종": 2, "충남": 3 };
+const today = new Date("2026-08-24T00:00:00");
+const isGame = (job: Job) => job.isGame;
+const isEligible = (job: Job) => job.devPrimary && Object.keys(regionRank).some((region) => job.location.includes(region.split("·")[0])) && job.eligibility.firstYear && !job.eligibility.graduateOnly && !job.eligibility.experienceRequired;
+const exclusionReason = (job: Job) => !job.devPrimary ? "소프트웨어·서비스 개발이 주된 업무가 아님" : !job.eligibility.firstYear ? "1학년 지원 불가" : job.eligibility.graduateOnly ? "졸업자 또는 졸업예정자만 지원 가능" : job.eligibility.experienceRequired ? "경력 보유가 필수" : "지원 가능 지역 외 근무지";
+const daysUntil = (deadline: string) => Math.round((new Date(`${deadline}T00:00:00`).getTime() - today.getTime()) / 86400000);
 
 export default function Home() {
-  const [category, setCategory] = useState("전체");
-  const [query, setQuery] = useState("");
-  const [saved, setSaved] = useState<Set<number>>(new Set());
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [notice, setNotice] = useState(false);
+  const [view, setView] = useState<View>("지원 가능");
+  const [typeFilter, setTypeFilter] = useState<"전체" | JobType>("전체");
+  const [sort, setSort] = useState<"priority" | "deadline">("priority");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [slide, setSlide] = useState(0);
+  const [savedAt, setSavedAt] = useState<Record<number, number>>({});
+  const [search, setSearch] = useState("");
+  const visibleJobs = useMemo(() => {
+    let next = jobs.filter((job) => view === "제외된 공고" ? !isEligible(job) : view === "관심 공고" ? Boolean(savedAt[job.id]) : isEligible(job));
+    if (typeFilter !== "전체") next = next.filter((job) => job.type === typeFilter);
+    if (search.trim()) next = next.filter((job) => `${job.company} ${job.title} ${job.location}`.toLowerCase().includes(search.trim().toLowerCase()));
+    return next.sort((a, b) => view === "관심 공고" ? (savedAt[b.id] ?? 0) - (savedAt[a.id] ?? 0) : sort === "priority" ? Number(isGame(b)) - Number(isGame(a)) || (regionRank[a.location] ?? 9) - (regionRank[b.location] ?? 9) || a.deadline.localeCompare(b.deadline) : a.deadline.localeCompare(b.deadline));
+  }, [view, typeFilter, sort, search, savedAt]);
+  const selectedJob = selectedId ? jobs.find((job) => job.id === selectedId) ?? null : null;
+  const activeJob = visibleJobs[slide] ?? visibleJobs[0] ?? null;
+  const selectJob = (job: Job) => { setSelectedId(job.id); setSlide(Math.max(0, visibleJobs.findIndex((item) => item.id === job.id))); };
+  const toggleSaved = (id: number) => setSavedAt((current) => { const next = { ...current }; if (next[id]) delete next[id]; else next[id] = Date.now(); return next; });
+  const moveSlide = (direction: number) => { if (visibleJobs.length) setSlide((current) => (current + direction + visibleJobs.length) % visibleJobs.length); };
+  const countFor = (target: View) => target === "지원 가능" ? jobs.filter(isEligible).length : target === "제외된 공고" ? jobs.filter((job) => !isEligible(job)).length : Object.keys(savedAt).length;
 
-  const visibleJobs = useMemo(() => jobs.filter((job) => {
-    const categoryMatch = category === "전체" || job.category === category;
-    const keyword = query.trim().toLowerCase();
-    const queryMatch = !keyword || [job.company, job.role, job.location, ...job.tags].join(" ").toLowerCase().includes(keyword);
-    return categoryMatch && queryMatch;
-  }), [category, query]);
-
-  useEffect(() => {
-    const close = (event: KeyboardEvent) => event.key === "Escape" && setSelectedJob(null);
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, []);
-
-  const toggleSave = (id: number) => setSaved((current) => {
-    const next = new Set(current);
-    next.has(id) ? next.delete(id) : next.add(id);
-    return next;
-  });
-
-  return (
-    <main>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="커리어핏 홈"><span className="brand-mark">C</span>커리어핏</a>
-        <nav aria-label="주요 메뉴"><a className="active" href="#jobs">맞춤 공고</a><a href="#explore">공고 탐색</a><a href="#guide">취업 가이드</a></nav>
-        <button className="profile-button" type="button" onClick={() => setNotice(true)}>내 프로필 <span>80%</span></button>
-      </header>
-
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <div className="eyebrow"><span>●</span> 대학생을 위한 커리어 큐레이션</div>
-          <h1>스펙보다 <em>가능성</em>을<br />먼저 보는 채용.</h1>
-          <p>전공, 관심 분야, 활동 경험을 바탕으로<br />지금 지원하기 좋은 공고만 골라드려요.</p>
-          <div className="hero-actions">
-            <a className="primary-button" href="#explore">내 맞춤 공고 보기 <span>→</span></a>
-            <span className="social-proof"><b>2,841명</b>의 학생이 이번 주에 시작했어요</span>
-          </div>
-        </div>
-        <aside className="match-card" aria-label="오늘의 추천 요약">
-          <div className="match-card-top"><span>오늘의 매치</span><span className="live-dot">LIVE</span></div>
-          <strong>김커핏 님에게<br /><i>12개</i>의 공고가<br />딱 맞아요.</strong>
-          <div className="match-bars" aria-hidden="true"><span style={{ width: "88%" }}></span><span style={{ width: "64%" }}></span><span style={{ width: "76%" }}></span></div>
-          <p>프로필을 2분만 더 채우면<br />추천 정확도가 높아져요.</p>
-          <button type="button" onClick={() => setNotice(true)}>프로필 완성하기 ↗</button>
-        </aside>
-      </section>
-
-      <section className="jobs-section" id="jobs">
-        <div className="section-heading"><div><span className="section-kicker">FOR YOU</span><h2>지금, 지원하면 좋은 공고</h2></div><a href="#explore">전체 공고 보기 →</a></div>
-        <div className="featured-grid">
-          {jobs.slice(0, 2).map((job) => <JobCard key={job.id} job={job} saved={saved.has(job.id)} onSave={toggleSave} onOpen={setSelectedJob} />)}
-          <article className="job-card insight-card"><span className="insight-label">이번 주 인사이트</span><strong>기획 직무 공고가<br /><i>18%</i> 늘었어요.</strong><p>관심 직무의 새 공고를 놓치지 않게<br />알림을 설정해 보세요.</p><button type="button" onClick={() => setNotice(true)}>알림 설정하기 →</button></article>
-        </div>
-      </section>
-
-      <section className="explore-section" id="explore">
-        <div className="explore-intro"><span className="section-kicker">EXPLORE</span><h2>내 조건으로 더 찾아보기</h2><p>현재는 예시 공고로 경험을 미리 보여드리고 있어요.</p></div>
-        <div className="search-panel">
-          <label className="search-box"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="회사, 직무, 키워드 검색" aria-label="공고 검색" />{query && <button type="button" onClick={() => setQuery("")} aria-label="검색어 지우기">×</button>}</label>
-          <div className="filter-row" aria-label="직무 필터">{categories.map((item) => <button key={item} type="button" className={category === item ? "selected" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
-          <span className="result-count"><b>{visibleJobs.length}</b>개의 공고</span>
-        </div>
-        {visibleJobs.length > 0 ? <div className="all-jobs-grid">{visibleJobs.map((job) => <JobCard key={job.id} job={job} saved={saved.has(job.id)} onSave={toggleSave} onOpen={setSelectedJob} />)}</div> : <div className="empty-state"><strong>조건에 맞는 공고가 아직 없어요.</strong><p>검색어를 줄이거나 다른 직무를 선택해 보세요.</p><button type="button" onClick={() => { setQuery(""); setCategory("전체"); }}>필터 초기화</button></div>}
-      </section>
-
-      <section className="guide-section" id="guide">
-        <div><span className="section-kicker light">START SMALL</span><h2>첫 지원까지,<br />딱 세 걸음이면 돼요.</h2></div>
-        <ol className="steps">
-          <li><span>01</span><div><strong>나를 알려주세요</strong><p>전공과 관심 직무, 활동 경험을 2분 안에 정리해요.</p></div></li>
-          <li><span>02</span><div><strong>추천 이유를 확인해요</strong><p>왜 나와 맞는지, 어떤 경험을 강조할지 함께 보여드려요.</p></div></li>
-          <li><span>03</span><div><strong>한 곳부터 지원해요</strong><p>마감일과 준비 체크리스트로 첫 지원을 끝까지 도와요.</p></div></li>
-        </ol>
-      </section>
-
-      <footer><a className="brand" href="#top"><span className="brand-mark">C</span>커리어핏</a><p>가능성을 발견하는 가장 가벼운 시작.</p><span>© 2026 CAREERFIT</span></footer>
-
-      {selectedJob && <div className="modal-backdrop" role="presentation" onMouseDown={() => setSelectedJob(null)}><section className="job-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onMouseDown={(event) => event.stopPropagation()}><button className="modal-close" type="button" onClick={() => setSelectedJob(null)} aria-label="상세 보기 닫기">×</button><div className="modal-company"><span className={`company-logo ${selectedJob.accent}`}>{selectedJob.logo}</span><div><b>{selectedJob.company}</b><span>{selectedJob.fit}% MATCH</span></div></div><h2 id="modal-title">{selectedJob.role}</h2><p className="modal-meta">{selectedJob.location} · {selectedJob.type} · {selectedJob.deadline}</p><p className="modal-summary">{selectedJob.summary}</p><h3>함께 할 일</h3><ul>{selectedJob.tasks.map((task) => <li key={task}>{task}</li>)}</ul><div className="modal-tags">{selectedJob.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div><div className="modal-actions"><button type="button" className={saved.has(selectedJob.id) ? "saved" : ""} onClick={() => toggleSave(selectedJob.id)}>{saved.has(selectedJob.id) ? "★ 저장됨" : "☆ 공고 저장"}</button><button type="button" onClick={() => setNotice(true)}>지원 준비 시작 →</button></div></section></div>}
-      {notice && <div className="toast" role="status">준비 중인 기능이에요. 곧 만나요! <button type="button" onClick={() => setNotice(false)} aria-label="알림 닫기">×</button></div>}
-    </main>
-  );
-}
-
-function JobCard({ job, saved, onSave, onOpen }: { job: Job; saved: boolean; onSave: (id: number) => void; onOpen: (job: Job) => void }) {
-  return <article className="job-card clickable" onClick={() => onOpen(job)}><div className="job-card-head"><span className={`company-logo ${job.accent}`}>{job.logo}</span><span className="fit-badge">{job.fit}% MATCH</span></div><p className="company-name">{job.company}</p><h3>{job.role}</h3><p className="job-meta">{job.location} · {job.type} · {job.deadline}</p><div className="tag-row">{job.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><button className={`save-button ${saved ? "saved" : ""}`} type="button" aria-label={`${job.company} 공고 ${saved ? "저장 해제" : "저장"}`} onClick={(event) => { event.stopPropagation(); onSave(job.id); }}>{saved ? "★" : "☆"}</button></article>;
+  return <main className={selectedJob ? "app-shell detail-open" : "app-shell"}>
+    <header className="topbar"><a className="wordmark" href="#top"><span>J</span>잡픽</a><div className="student-chip"><span className="status-dot" /> 충남대학교 컴퓨터인공지능학부 · 1학년</div><div className="top-actions"><button type="button" className="ghost-button">프로필 설정</button><div className="avatar">김</div></div></header>
+    <section className="intro" id="top"><div><p className="eyebrow">TODAY&apos;S JOB RADAR</p><h1>지금, <em>지원할 수 있는</em><br />공고만 골라봤어요.</h1><p className="intro-copy">개발이 주된 업무인지, 1학년도 지원할 수 있는지<br />공고에 적힌 조건으로 먼저 확인해요.</p></div><div className="intro-note"><span>추천 기준</span><strong>게임 · 지역 · 마감일</strong><p>공고 원문에 적힌 데이터만 사용해<br />지원 가능 여부를 판정합니다.</p></div></section>
+    <section className="workspace" aria-label="채용공고 탐색">
+      <aside className="sidebar"><div className="sidebar-title"><span>공고 목록</span><b>{visibleJobs.length}</b></div><div className="view-tabs">{(["지원 가능", "제외된 공고", "관심 공고"] as View[]).map((item) => <button key={item} type="button" className={view === item ? "active" : ""} onClick={() => { setView(item); setSlide(0); setSelectedId(null); }}>{item}<span>{countFor(item)}</span></button>)}</div><div className="sidebar-filters"><label htmlFor="search">공고 검색</label><div className="search-input"><span>⌕</span><input id="search" value={search} onChange={(event) => { setSearch(event.target.value); setSlide(0); }} placeholder="회사, 직무, 지역" /></div><label>모집 형태</label><div className="segmented">{(["전체", "인턴", "신입"] as const).map((item) => <button key={item} type="button" className={typeFilter === item ? "selected" : ""} onClick={() => { setTypeFilter(item); setSlide(0); }}>{item}</button>)}</div></div></aside>
+      <div className="carousel-panel"><div className="panel-heading"><div><p className="eyebrow">{view === "지원 가능" ? "APPLY NOW" : view === "제외된 공고" ? "CHECK CONDITIONS" : "SAVED JOBS"}</p><h2>{view}</h2></div><div className="sort-control"><label htmlFor="sort">정렬</label><select id="sort" value={sort} onChange={(event) => setSort(event.target.value as "priority" | "deadline")} disabled={view === "관심 공고"}><option value="priority">우선순위순</option><option value="deadline">마감일순</option></select></div></div>{activeJob ? <><div className="carousel-meta"><span>{slide + 1} / {visibleJobs.length}</span><div><button type="button" onClick={() => moveSlide(-1)} aria-label="이전 공고">←</button><button type="button" onClick={() => moveSlide(1)} aria-label="다음 공고">→</button></div></div><div className="carousel-window"><div className="carousel-track" style={{ transform: `translateX(calc(${slide} * -100%))` }}>{visibleJobs.map((job) => <article className={`job-card ${job.id === activeJob.id ? "active" : ""}`} key={job.id} onClick={() => selectJob(job)}><div className="card-top"><span className={`company-mark ${job.isGame ? "game" : ""}`}>{job.company.slice(0, 1)}</span><span className={job.isGame ? "game-label" : "match-label"}>{job.isGame ? "GAME" : "MATCH"}</span></div><p className="company">{job.company}</p><h3>{job.title}</h3><div className="card-meta"><span>⌖ {job.location}</span><span>◷ {job.deadlineLabel}</span></div><div className="card-bottom"><span className="type-pill">{job.type}</span><span className="mode-pill">{job.mode}</span><button type="button" className={savedAt[job.id] ? "save saved" : "save"} onClick={(event) => { event.stopPropagation(); toggleSaved(job.id); }} aria-label={`${job.company} 관심 공고 ${savedAt[job.id] ? "해제" : "저장"}`}>{savedAt[job.id] ? "★" : "☆"}</button></div>{view === "제외된 공고" && <p className="excluded-reason">제외: {exclusionReason(job)}</p>}</article>)}</div></div><p className="carousel-hint">카드를 눌러 상세 내용을 확인하세요</p></> : <div className="empty"><strong>{view === "관심 공고" ? "저장한 공고가 아직 없어요" : "조건에 맞는 공고가 없어요"}</strong><span>다른 필터를 선택해보세요.</span></div>}</div>
+      {selectedJob && <aside className="detail-panel"><div className="detail-top"><span className="eyebrow">JOB DETAIL</span><button type="button" className="close-detail" onClick={() => setSelectedId(null)} aria-label="상세 닫기">×</button></div><div className="detail-company"><span className={`company-mark large ${selectedJob.isGame ? "game" : ""}`}>{selectedJob.company.slice(0, 1)}</span><div><b>{selectedJob.company}</b><span>{selectedJob.location}</span></div></div><h2>{selectedJob.title}</h2><p className="detail-summary">{selectedJob.summary}</p><div className="detail-status"><span className={isEligible(selectedJob) ? "status-ok" : "status-no"}>{isEligible(selectedJob) ? "지원 가능" : "지원 제외"}</span><span>{selectedJob.deadlineLabel}</span></div><div className="detail-grid"><div><span>개발 중심 업무</span><strong>{selectedJob.devPrimary ? "예 · 주된 업무" : "아니오"}</strong></div><div><span>모집 형태</span><strong>{selectedJob.type}</strong></div><div><span>근무 방식</span><strong>{selectedJob.mode}</strong></div><div><span>접수 상태</span><strong>{daysUntil(selectedJob.deadline) >= 0 ? "접수 중" : "마감"}</strong></div></div><section className="detail-section"><h3>주요 업무</h3><ul>{selectedJob.responsibilities.map((item) => <li key={item}>{item}</li>)}</ul></section><section className="detail-section"><h3>지원 자격</h3><ul>{selectedJob.qualification.map((item) => <li key={item}>{item}</li>)}</ul></section>{!isEligible(selectedJob) && <div className="reason-box"><b>지원 제외 이유</b><span>{exclusionReason(selectedJob)}</span></div>}<div className="detail-actions"><button type="button" className={savedAt[selectedJob.id] ? "saved-action" : ""} onClick={() => toggleSaved(selectedJob.id)}>{savedAt[selectedJob.id] ? "★ 관심 공고 저장됨" : "☆ 관심 공고 저장"}</button><a href={selectedJob.source} target="_blank" rel="noreferrer">원문 공고 보기 ↗</a></div></aside>}
+    </section><footer><span className="wordmark"><span>J</span>잡픽</span><p>공고에 적힌 조건으로, 첫 지원을 더 가볍게.</p><small>© 2026 JOBPICK</small></footer>
+  </main>;
 }

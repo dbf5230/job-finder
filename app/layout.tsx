@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   const headerStore = await headers();
   const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host") ?? "localhost:3000";
   const protocol = headerStore.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "커리어핏 — 대학생 맞춤 채용 추천";
-  const description = "전공과 경험을 바탕으로 지금 지원하기 좋은 인턴·신입 공고를 추천합니다.";
+  const title = "잡픽 — 1학년을 위한 채용공고 파인더";
+  const description = "공고에 적힌 조건으로 지원 가능한 개발 인턴·신입 공고를 빠르게 찾아보세요.";
 
   return {
     title,
@@ -37,11 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
