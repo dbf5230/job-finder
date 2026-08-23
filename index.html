@@ -1,8 +1,41 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>잡픽 — 채용공고 파인더</title>
-  <style>body{margin:0;background:#fff;font-family:"Nanum Gothic","Noto Sans KR",Arial,sans-serif;color:#0b0b0e}main{max-width:960px;margin:auto;padding:8vh 6vw}.brand{font-size:22px;font-weight:900}.brand b{display:inline-grid;place-items:center;width:32px;height:32px;margin-right:8px;border:2px solid #0b0b0e;border-radius:50% 50% 50% 4px;background:#e39eff}h1{margin:70px 0 12px;font-size:clamp(42px,7vw,78px);letter-spacing:-.09em;line-height:1.05}h1 em{font-style:normal;color:#8d4bb2}p{color:#756f7c;line-height:1.7}.tabs{display:flex;gap:8px;margin:42px 0 20px}.tabs button{padding:12px 18px;border:1px solid #ddd6e2;background:#fff;font-weight:800;cursor:pointer}.tabs button.active{background:#0b0b0e;color:#fff}.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.job{padding:22px;border:1px solid #e7e2eb;box-shadow:6px 6px #f7eaff}.job strong{display:block;font-size:19px;margin:14px 0 8px}.job small{color:#756f7c}.pill{display:inline-block;margin-top:18px;padding:6px 9px;background:#f7eaff;font-size:11px;font-weight:800}@media(max-width:600px){main{padding:35px 20px}h1{margin-top:50px}.tabs{overflow:auto}.tabs button{white-space:nowrap}}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>잡픽 — 채용공고 파인더</title>
+  <style>
+    body{margin:0;background:#fff;font-family:"Nanum Gothic","Noto Sans KR",Arial,sans-serif;color:#0b0b0e}
+    main{max-width:960px;margin:auto;padding:8vh 6vw}.brand{font-size:22px;font-weight:900}.brand b{display:inline-grid;place-items:center;width:32px;height:32px;margin-right:8px;border:2px solid #0b0b0e;border-radius:50% 50% 50% 4px;background:#e39eff}
+    h1{margin:70px 0 12px;font-size:clamp(42px,7vw,78px);letter-spacing:-.09em;line-height:1.05}h1 em{font-style:normal;color:#8d4bb2}p{color:#756f7c;line-height:1.7}
+    .tabs{display:flex;gap:8px;margin:42px 0 20px}.tabs button{padding:12px 18px;border:1px solid #ddd6e2;background:#fff;font-weight:800;cursor:pointer}.tabs button.active{background:#0b0b0e;color:#fff}
+    .list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.job{padding:22px;border:1px solid #e7e2eb;box-shadow:6px 6px #f7eaff;cursor:pointer}.job:hover{border-color:#0b0b0e}.job strong{display:block;font-size:19px;margin:14px 0 8px}.job small{color:#756f7c}.pill{display:inline-block;margin-top:18px;padding:6px 9px;background:#f7eaff;font-size:11px;font-weight:800}
+    .job-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:18px}.save-button,.detail-save{padding:8px 10px;border:1px solid #0b0b0e;background:#fff;font-size:11px;font-weight:800;cursor:pointer}.save-button.saved,.detail-save.saved{background:#e39eff}.detail{margin-top:28px;padding:28px;border:2px solid #0b0b0e;background:#fff}.detail h2{margin:7px 0 10px;font-size:clamp(28px,5vw,48px);letter-spacing:-.07em;line-height:1.1}.detail-meta{color:#756f7c;font-size:12px}.detail p{white-space:pre-line}.detail-actions{display:flex;gap:8px;margin-top:22px}.detail-actions a{display:inline-grid;place-items:center;padding:8px 10px;background:#0b0b0e;color:#fff;font-size:11px;font-weight:800;text-decoration:none}
+    @media(max-width:600px){main{padding:35px 20px}h1{margin-top:50px}.tabs{overflow:auto}.tabs button{white-space:nowrap}.detail{padding:20px}}
+  </style>
 </head>
-<body><main><div class="brand"><b>J</b>잡픽</div><h1>지금, <em>지원할 수 있는</em><br>공고만 골라봤어요.</h1><p>개발이 주된 업무인지, 1학년도 지원할 수 있는지<br>공고에 적힌 조건으로 먼저 확인해요.</p><div class="tabs"><button class="active" data-filter="apply">지원 가능</button><button data-filter="exclude">제외된 공고</button><button data-filter="saved">관심 공고</button></div><section class="list" id="list"></section></main><script>const jobs=[['스마일게이트','게임 클라이언트 개발 인턴','판교·경기','인턴',true],['넥슨','웹 서비스 프론트엔드 인턴','판교·경기','인턴',true],['토스','제품 개발 인턴','서울·수도권','인턴',true],['카카오','AI 서비스 개발 신입','판교·경기','신입',false],['대전정보문화산업진흥원','지역 콘텐츠 플랫폼 개발 인턴','대전','인턴',true],['모바일리더','서비스 운영 매니저','서울·수도권','신입',false]];let saved=JSON.parse(localStorage.getItem('jobpick')||'{}');function render(filter='apply'){list.innerHTML='';jobs.filter(j=>filter==='apply'?j[4]:filter==='exclude'?!j[4]:filter==='saved'&&saved[j[0]]).forEach(j=>{const a=document.createElement('article');a.className='job';a.innerHTML=`<small>${j[0]} · ${j[2]}</small><strong>${j[1]}</strong><span class="pill">${j[3]} · ${j[4]?'지원 가능':'제외됨'}</span>`;a.onclick=()=>{saved[j[0]]=Date.now();localStorage.setItem('jobpick',JSON.stringify(saved))};list.append(a)})}document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button').forEach(x=>x.classList.remove('active'));b.classList.add('active');render(b.dataset.filter)});render();</script></body></html>
-
+<body>
+  <main>
+    <div class="brand"><b>J</b>잡픽</div>
+    <h1>지금, <em>지원할 수 있는</em><br>공고만 골라봤어요.</h1>
+    <p>개발이 주된 업무인지, 1학년도 지원할 수 있는지<br>공고에 적힌 조건으로 먼저 확인해요.</p>
+    <div class="tabs"><button class="active" data-filter="apply">지원 가능</button><button data-filter="exclude">제외된 공고</button><button data-filter="saved">관심 공고</button></div>
+    <section class="list" id="list"></section>
+    <section id="detail" class="detail" hidden></section>
+  </main>
+  <script>
+    const list=document.getElementById('list');
+    const detail=document.getElementById('detail');
+    let jobs=[];let currentFilter='apply';let selectedId=null;let saved=JSON.parse(localStorage.getItem('jobpick')||'{}');
+    const text=(value)=>value||'';
+    const typeOf=(job)=>String(job.recrutSeNmLst||'').includes('인턴')?'인턴':String(job.recrutSeNmLst||'').includes('신입')?'신입':'';
+    const eligible=(job)=>job.ongoingYn==='Y'&&['인턴','신입'].includes(typeOf(job));
+    const dateOf=(job)=>job.pbancEndYmd?`${job.pbancEndYmd.slice(0,4)}.${job.pbancEndYmd.slice(4,6)}.${job.pbancEndYmd.slice(6,8)}`:'';
+    function toggleSaved(job){if(saved[job.recrutPblntSn])delete saved[job.recrutPblntSn];else saved[job.recrutPblntSn]=Date.now();localStorage.setItem('jobpick',JSON.stringify(saved));render();}
+    function showDetail(job){selectedId=job.recrutPblntSn;detail.hidden=false;detail.innerHTML=`<div class="detail-meta">${text(job.instNm)} · ${text(job.workRgnNmLst)}</div><h2>${text(job.recrutPbancTtl)}</h2><div class="detail-meta">마감일 ${dateOf(job)} · ${typeOf(job)} · ${text(job.hireTypeNmLst)}</div><p><b>지원 자격</b><br>${text(job.aplyQlfcCn)}</p><div class="detail-actions"><button class="detail-save ${saved[job.recrutPblntSn]?'saved':''}" type="button">${saved[job.recrutPblntSn]?'저장됨':'관심 공고 저장'}</button>${job.srcUrl?`<a href="${job.srcUrl}" target="_blank" rel="noreferrer">원문 공고 보기 ↗</a>`:''}</div>`;detail.querySelector('.detail-save').onclick=()=>toggleSaved(job);detail.scrollIntoView({behavior:'smooth',block:'nearest'});}
+    function render(){list.innerHTML='';const visible=jobs.filter(job=>currentFilter==='apply'?eligible(job):currentFilter==='exclude'?!eligible(job):Boolean(saved[job.recrutPblntSn]));visible.forEach(job=>{const card=document.createElement('article');card.className='job';card.innerHTML=`<small>${text(job.instNm)} · ${text(job.workRgnNmLst)}</small><strong>${text(job.recrutPbancTtl)}</strong><span class="pill">${typeOf(job)} · ${eligible(job)?'지원 가능':'제외됨'}</span><div class="job-actions"><small>마감 ${dateOf(job)}</small><button type="button" class="save-button ${saved[job.recrutPblntSn]?'saved':''}">${saved[job.recrutPblntSn]?'저장됨':'관심 공고 저장'}</button></div>`;card.onclick=()=>showDetail(job);card.querySelector('.save-button').onclick=(event)=>{event.stopPropagation();toggleSaved(job)};list.append(card)});if(selectedId){const selected=jobs.find(job=>job.recrutPblntSn===selectedId);if(selected)showDetail(selected);}}
+    document.querySelectorAll('[data-filter]').forEach(button=>button.onclick=()=>{document.querySelectorAll('.tabs button').forEach(item=>item.classList.remove('active'));button.classList.add('active');currentFilter=button.dataset.filter;selectedId=null;detail.hidden=true;render()});
+    fetch('/jobs.json').then(response=>response.json()).then(data=>{jobs=data;render()}).catch(()=>{list.innerHTML='<p>공고를 불러오지 못했어요.</p>'});
+  </script>
+</body>
+</html>

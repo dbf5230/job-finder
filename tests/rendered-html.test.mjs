@@ -31,6 +31,7 @@ test("renders a real recruitment from jobs.json", async () => {
   const displayed = jobs.find((job) => job.recrutPbancTtl && html.includes(job.recrutPbancTtl));
   assert.ok(displayed);
   assert.match(html, new RegExp(escapeRegExp(displayed.recrutPbancTtl)));
+  assert.match(html, /관심 공고 저장/);
   assert.doesNotMatch(html, /스마일게이트|넥슨|토스/);
 });
 
